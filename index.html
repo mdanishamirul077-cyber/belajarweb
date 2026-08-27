@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edukasi RAT · Remote Access Trojan</title>
+  <!-- Font & ikon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f9ff;
+      color: #1e293b;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ========== HALAMAN WELCOME ========== */
+    #welcomePage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #0a1628, #1a2a4a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+
+    #welcomePage.hide {
+      opacity: 0;
+      transform: scale(1.03);
+      pointer-events: none;
+    }
+
+    .welcome-box {
+      text-align: center;
+      padding: 2.5rem 3rem;
+      max-width: 680px;
+      width: 90%;
+    }
+
+    .welcome-box .icon-shield {
+      font-size: 4.2rem;
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.12);
+      padding: 1.2rem;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      border: 2px solid rgba(96, 165, 250, 0.2);
+      animation: float-shield 3s ease-in-out infinite;
+    }
+
+    @keyframes float-shield {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    .welcome-box h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-box h1 span {
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-box .subtitle {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      margin-bottom: 0.75rem;
+    }
+
+    .welcome-box .creator {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin: 0.5rem 0 1.8rem 0;
+    }
+
+    .welcome-box .creator i {
+      color: #f472b6;
+      margin: 0 6px;
+    }
+
+    .welcome-box .btn-start {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border: none;
+      color: white;
+      font-size: 1.15rem;
+      font-weight: 600;
+      padding: 0.9rem 3rem;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.25s ease;
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .welcome-box .btn-start:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.45);
+    }
+
+    .welcome-box .btn-start i {
+      font-size: 1.1rem;
+    }
+
+    .welcome-box .credit-note {
+      margin-top: 1.8rem;
+      color: #475569;
+      font-size: 0.85rem;
+      letter-spacing: 0.3px;
+    }
+
+    .welcome-box .credit-note i {
+      color: #60a5fa;
+    }
+
+    /* ========== DASHBOARD (KONTEN UTAMA) ========== */
+    #dashboard {
+      opacity: 0;
+      transition: opacity 1s ease;
+      width: 100%;
+      padding: 2rem 1.5rem;
+    }
+
+    #dashboard.show {
+      opacity: 1;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem 2.5rem;
+      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.1);
+    }
+
+    /* header */
+    .header-edu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e9eef3;
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .header-edu h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #0b2b4b, #1f4b6e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-edu h1 i {
+      background: none;
+      -webkit-text-fill-color: #2563eb;
+      margin-right: 8px;
+    }
+
+    .badge-voice {
+      background: #eef2ff;
+      padding: 0.5rem 1.2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+    }
+
+    .badge-voice i {
+      color: #2563eb;
+      font-size: 1.2rem;
+    }
+
+    /* voice control */
+    .voice-section {
+      background: #f8faff;
+      border-radius: 1.5rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e0e9f5;
+    }
+
+    .voice-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .voice-info i {
+      font-size: 2rem;
+      color: #2563eb;
+      background: white;
+      padding: 0.7rem;
+      border-radius: 60px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+    }
+
+    .voice-info p {
+      font-weight: 500;
+      color: #0b2b4b;
+    }
+
+    .voice-info small {
+      display: block;
+      font-weight: 400;
+      color: #475569;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    .voice-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-voice {
+      background: white;
+      border: 1px solid #d0ddec;
+      padding: 0.6rem 1.2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #1e293b;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .btn-voice i {
+      font-size: 1rem;
+      color: #2563eb;
+    }
+
+    .btn-voice:hover {
+      background: #eef2ff;
+      border-color: #a5b9d4;
+    }
+
+    .btn-voice.primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+    .btn-voice.primary i {
+      color: white;
+    }
+    .btn-voice.primary:hover {
+      background: #1d4ed8;
+    }
+
+    /* card konten */
+    .grid-edu {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.8rem;
+      margin-top: 1.2rem;
+    }
+
+    .card-topic {
+      background: #fafcff;
+      border-radius: 1.2rem;
+      padding: 1.5rem 1.8rem;
+      border-left: 5px solid #2563eb;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+      transition: 0.1s;
+    }
+
+    .card-topic h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #0b2b4b;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-topic h2 i {
+      color: #2563eb;
+      font-size: 1.4rem;
+      width: 2rem;
+    }
+
+    .card-topic p, .card-topic li {
+      color: #1e293b;
+      font-size: 1rem;
+    }
+
+    .card-topic ul {
+      list-style: none;
+      padding-left: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .card-topic ul li {
+      padding: 0.3rem 0 0.3rem 1.8rem;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%232563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>') left center no-repeat;
+      background-size: 1.2rem;
+    }
+
+    .highlight-box {
+      background: #e6f0ff;
+      padding: 1rem 1.6rem;
+      border-radius: 1rem;
+      margin: 1rem 0 0.5rem 0;
+      border: 1px solid #c7dbfa;
+    }
+
+    .highlight-box strong {
+      color: #1e3a8a;
+    }
+
+    .row-circles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      margin-top: 0.7rem;
+    }
+
+    .chip {
+      background: white;
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid #d9e2ef;
+      font-weight: 500;
+      font-size: 0.9rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    }
+
+    .chip i {
+      color: #2563eb;
+      margin-right: 6px;
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      font-size: 0.9rem;
+      color: #64748b;
+      border-top: 1px solid #e2e9f2;
+      padding-top: 1.5rem;
+      text-align: center;
+    }
+
+    /* responsif */
+    @media (max-width: 700px) {
+      .container { padding: 1.5rem; }
+      .header-edu { flex-direction: column; align-items: start; gap: 10px; }
+      .voice-section { flex-direction: column; align-items: start; gap: 1rem; }
+      .voice-actions { width: 100%; justify-content: start; }
+      .card-topic h2 { font-size: 1.25rem; }
+      .welcome-box h1 { font-size: 2rem; }
+      .welcome-box { padding: 1.5rem; }
+    }
+
+    /* animasi voice */
+    .speaking {
+      animation: pulse-voice 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse-voice {
+      0% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0.7; transform: scale(1); }
+    }
+
+    .btn-voice:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(0.3);
+    }
+
+    .status-voice {
+      font-size: 0.9rem;
+      margin-left: 6px;
+      color: #2563eb;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== HALAMAN WELCOME ====== -->
+  <div id="welcomePage">
+    <div class="welcome-box">
+      <div class="icon-shield">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <h1>Welcome To <span>Web Belajar</span></h1>
+      <p class="subtitle">Tentang RAT · Remote Access Trojan</p>
+      <div class="creator">
+        <i class="fas fa-user-astronaut"></i> By <strong>Remon</strong> <i class="fas fa-rocket"></i>
+      </div>
+      <button class="btn-start" id="startBtn">
+        <i class="fas fa-arrow-right-to-bracket"></i> Mulai Belajar
+      </button>
+      <div class="credit-note">
+        <i class="fas fa-graduation-cap"></i> Edukasi keamanan siber · Nada belajar interaktif
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== DASHBOARD ====== -->
+  <div id="dashboard">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="header-edu">
+        <h1><i class="fas fa-shield-halved"></i> Edukasi RAT</h1>
+        <div class="badge-voice">
+          <i class="fas fa-headphones"></i> Nada belajar · AI Voice
+        </div>
+      </div>
+
+      <!-- VOICE SECTION -->
+      <div class="voice-section" id="voiceSection">
+        <div class="voice-info">
+          <i class="fas fa-robot"></i>
+          <div>
+            <p><i class="fas fa-ear-listen"></i> Asisten AI Edukasi <span class="status-voice" id="statusVoice">● siap</span></p>
+            <small>Dengarkan penjelasan lengkap tentang RAT dengan nada santai & mudah dicerna</small>
+          </div>
+        </div>
+        <div class="voice-actions">
+          <button class="btn-voice primary" id="playVoiceBtn"><i class="fas fa-play"></i> Putar suara AI</button>
+          <button class="btn-voice" id="pauseVoiceBtn"><i class="fas fa-pause"></i> Jeda</button>
+          <button class="btn-voice" id="stopVoiceBtn"><i class="fas fa-stop"></i> Henti</button>
+        </div>
+      </div>
+
+      <!-- KONTEN EDUKASI -->
+      <div class="grid-edu" id="contentEdu">
+
+        <!-- 1. Apa itu RAT -->
+        <div class="card-topic" data-topic="apa">
+          <h2><i class="fas fa-circle-question"></i> Apa itu RAT?</h2>
+          <p><strong>RAT</strong> (Remote Access Trojan) adalah jenis <strong>malware</strong> yang memungkinkan penyerang mengendalikan perangkat korban dari jarak jauh secara diam-diam. Berbeda dengan virus biasa, RAT dirancang untuk memberikan akses penuh seperti <strong>remote desktop</strong>, mencuri data, mengaktifkan kamera/mikrofon, dan merekam aktivitas.</p>
+          <div class="highlight-box">
+            <i class="fas fa-bullseye" style="color:#1e3a8a; margin-right: 8px;"></i>
+            <strong>Intinya:</strong> RAT adalah "kuda troya" yang membuka pintu belakang sistem, sering kali menyamar sebagai file atau aplikasi legal.
+          </div>
+        </div>
+
+        <!-- 2. Cara kerja RAT -->
+        <div class="card-topic" data-topic="cara">
+          <h2><i class="fas fa-gears"></i> Bagaimana cara kerja RAT?</h2>
+          <p>RAT bekerja dalam beberapa tahap:</p>
+          <ul>
+            <li><strong>Infeksi:</strong> Korban tanpa sengaja mengunduh file berbahaya (email phishing, crack, lampiran).</li>
+            <li><strong>Koneksi:</strong> Setelah aktif, RAT menghubungi <em>Command & Control (C2)</em> server untuk menerima perintah.</li>
+            <li><strong>Kontrol:</strong> Penyerang dapat mengambil alih desktop, mencuri password, mengakses webcam, atau menyebar ke perangkat lain.</li>
+            <li><strong>Persistensi:</strong> Banyak RAT memodifikasi registry atau task scheduler agar tetap bertahan setelah reboot.</li>
+          </ul>
+          <p style="margin-top: 0.8rem; background: #f1f6fe; padding: 0.5rem 1rem; border-radius: 30px; display: inline-block;"><i class="fas fa-link" style="color:#2563eb;"></i> Koneksi biasanya menggunakan protokol TCP, HTTP, atau DNS tunneling.</p>
+        </div>
+
+        <!-- 3. Jenis-jenis RAT -->
+        <div class="card-topic" data-topic="jenis">
+          <h2><i class="fas fa-list-ul"></i> Jenis-jenis RAT</h2>
+          <div class="row-circles">
+            <span class="chip"><i class="fas fa-window-maximize"></i> njRAT</span>
+            <span class="chip"><i class="fas fa-bolt"></i> DarkComet</span>
+            <span class="chip"><i class="fas fa-ghost"></i> Gh0st RAT</span>
+            <span class="chip"><i class="fas fa-android"></i> SpyNote (Android)</span>
+            <span class="chip"><i class="fas fa-apple"></i> Quasar</span>
+            <span class="chip"><i class="fas fa-skull"></i> Poison Ivy</span>
+          </div>
+          <p style="margin-top: 1rem;">Setiap varian punya keistimewaan: ada yang fokus pada <strong>spyware</strong>, <strong>keylogger</strong>, atau <strong>ransomware</strong>. Beberapa RAT seperti <strong>njRAT</strong> populer karena antarmuka yang mudah digunakan di kalangan peretas pemula.</p>
+        </div>
+
+        <!-- 4. Ciri-ciri RAT -->
+        <div class="card-topic" data-topic="ciri">
+          <h2><i class="fas fa-magnifying-glass"></i> Ciri-ciri RAT</h2>
+          <ul>
+            <li><strong>Performa menurun</strong> — CPU atau RAM tiba-tiba tinggi tanpa alasan.</li>
+            <li><strong>Data internet membengkak</strong> — lalu lintas keluar yang mencurigakan (upload data).</li>
+            <li><strong>Aktivitas kamera/mikrofon</strong> — lampu indikator menyala saat tidak digunakan.</li>
+            <li><strong>File aneh</strong> — muncul proses asing di Task Manager (contoh: svchost.exe palsu).</li>
+            <li><strong>Pengaturan berubah</strong> — firewall dinonaktifkan, atau program baru terinstal tanpa izin.</li>
+          </ul>
+          <div class="highlight-box" style="margin-top: 1rem;">
+            <i class="fas fa-triangle-exclamation" style="color:#b45309;"></i>
+            <strong>Peringatan:</strong> Jika kamu mengalami gejala-gejala di atas, segera putuskan koneksi internet dan scan dengan antivirus terpercaya.
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <i class="fas fa-laptop-shield" style="margin-right: 6px;"></i> Edukasi keamanan siber · dibuat dengan gaya belajar interaktif
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ========== WELCOME PAGE ==========
+      const welcomePage = document.getElementById('welcomePage');
+      const dashboard = document.getElementById('dashboard');
+      const startBtn = document.getElementById('startBtn');
+
+      // Saat tombol "Mulai Belajar" diklik
+      startBtn.addEventListener('click', function() {
+        welcomePage.classList.add('hide');
+        dashboard.classList.add('show');
+
+        // sedikit delay agar transisi halus
+        setTimeout(() => {
+          welcomePage.style.display = 'none';
+        }, 1000);
+      });
+
+      // ========== VOICE AI ==========
+      const playBtn = document.getElementById('playVoiceBtn');
+      const pauseBtn = document.getElementById('pauseVoiceBtn');
+      const stopBtn = document.getElementById('stopVoiceBtn');
+      const statusSpan = document.getElementById('statusVoice');
+
+      const scriptNarasi = `
+        Halo teman-teman! Kali ini kita akan belajar tentang RAT, kepanjangan dari Remote Access Trojan. 
+        RAT adalah program jahat yang memungkinkan hacker mengendalikan komputer atau ponsel kita dari jarak jauh. 
+        Bayangkan seperti ada orang yang diam-diam bisa mengakses semua file, kamera, bahkan menyalakan mikrofon tanpa sepengetahuan kita. 
+
+        Bagaimana cara kerjanya? Pertama, RAT masuk melalui file yang kita unduh dari email atau situs tidak jelas. 
+        Setelah terinstal, dia akan menghubungi server pusat sang hacker, dan dari situ si penyerang bebas beraksi. 
+        Dia bisa mencuri password, mengambil foto, atau merekam ketikan kita. 
+
+        Jenis-jenis RAT itu banyak, seperti njRAT, DarkComet, Gh0st RAT, dan masih banyak lagi. 
+        Masing-masing punya trik sendiri, tapi tujuan akhirnya sama: menguasai perangkat kita. 
+
+        Lalu, bagaimana ciri-cirinya? Perhatikan jika komputer tiba-tiba lambat, lampu kamera menyala sendiri, 
+        atau ada proses aneh di task manager. Itu bisa jadi tanda adanya RAT. 
+
+        Semoga penjelasan ini bermanfaat, tetap waspada dan jangan mudah mengunduh file mencurigakan. 
+        Terima kasih sudah mendengarkan!
+      `;
+
+      let utterance = null;
+      let isSpeaking = false;
+      let isPaused = false;
+
+      function createUtterance() {
+        const synth = window.speechSynthesis;
+        if (!synth) {
+          alert('Browser kamu tidak mendukung Speech Synthesis. Gunakan Chrome, Edge, atau Safari.');
+          return null;
+        }
+        if (synth.speaking) {
+          synth.cancel();
+        }
+
+        const u = new SpeechSynthesisUtterance(scriptNarasi);
+        u.lang = 'id-ID';
+        u.rate = 0.95;
+        u.pitch = 1.0;
+        u.volume = 1;
+
+        const voices = synth.getVoices();
+        const indoVoice = voices.find(v => v.lang.includes('id'));
+        if (indoVoice) u.voice = indoVoice;
+
+        u.onstart = () => {
+          isSpeaking = true;
+          isPaused = false;
+          statusSpan.innerHTML = '● berbicara ...';
+          statusSpan.style.color = '#2563eb';
+          playBtn.disabled = true;
+          playBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Memutar';
+        };
+
+        u.onend = () => {
+          isSpeaking = false;
+          isPaused = false;
+          statusSpan.innerHTML = '● selesai';
+          statusSpan.style.color = '#2563eb';
+          playBtn.disabled = false;
+          playBtn.innerHTML = '<i class="fas fa-play"></i> Putar suara AI';
+        };
+
+        u.onerror = (e) => {
+          console.warn('Speech error:', e);
+          isSpeaking = false;
+          isPaused = false;
+          statusSpan.innerHTML = '● error';
+          statusSpan.style.color = '#b45309';
+          playBtn.disabled = false;
+          playBtn.innerHTML = '<i class="fas fa-play"></i> Putar suara AI';
+        };
+
+        return u;
+      }
+
+      function playVoice() {
+        const synth = window.speechSynthesis;
+        if (!synth) return;
+
+        if (isSpeaking && isPaused) {
+          synth.resume();
+          isPaused = false;
+          statusSpan.innerHTML = '● dilanjutkan';
+          playBtn.disabled = true;
+          playBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Memutar';
+          return;
+        }
+
+        if (isSpeaking) return;
+
+        const newUtterance = createUtterance();
+        if (!newUtterance) return;
+        utterance = newUtterance;
+        synth.speak(utterance);
+      }
+
+      function pauseVoice() {
+        const synth = window.speechSynthesis;
+        if (!synth) return;
+        if (synth.speaking && !isPaused) {
+          synth.pause();
+          isPaused = true;
+          statusSpan.innerHTML = '● dijeda';
+          playBtn.disabled = false;
+          playBtn.innerHTML = '<i class="fas fa-play"></i> Lanjutkan';
+        } else {
+          if (!synth.speaking) {
+            statusSpan.innerHTML = '● tidak ada suara';
+          } else {
+            statusSpan.innerHTML = '● sudah dijeda';
+          }
+        }
+      }
+
+      function stopVoice() {
+        const synth = window.speechSynthesis;
+        if (!synth) return;
+        if (synth.speaking) {
+          synth.cancel();
+        }
+        isSpeaking = false;
+        isPaused = false;
+        statusSpan.innerHTML = '● dihentikan';
+        playBtn.disabled = false;
+        playBtn.innerHTML = '<i class="fas fa-play"></i> Putar suara AI';
+      }
+
+      if (window.speechSynthesis) {
+        window.speechSynthesis.getVoices();
+        window.speechSynthesis.onvoiceschanged = () => {
+          window.speechSynthesis.getVoices();
+        };
+      }
+
+      playBtn.addEventListener('click', playVoice);
+      pauseBtn.addEventListener('click', pauseVoice);
+      stopBtn.addEventListener('click', stopVoice);
+
+      statusSpan.innerHTML = '● siap';
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          const synth = window.speechSynthesis;
+          if (synth && synth.speaking) {
+            // biarkan
+          }
+        }
+      });
+
+      setTimeout(() => {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.getVoices();
+        }
+      }, 300);
+    })();
+  </script>
+
+</body>
+</html>
